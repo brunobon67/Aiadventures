@@ -1,0 +1,5 @@
+{
+  "name": "AI Travel Itinerary Planner",
+  "description": "A responsive web app that generates personalized travel itineraries for any city worldwide. Users enter a city, dates, interests, pace, and budget, and the app returns a detailed day-by-day itinerary.",
+  "requestFramePermissions": []
+}

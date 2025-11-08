@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Travel Itinerary Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#F97316', // Orange-500
+              'primary-hover': '#FB923C', // Orange-400
+              'secondary': '#0EA5E9', // Sky-500
+              'light': '#F8FAFC', // Slate-50
+              'dark': '#1E293B', // Slate-800
+              'muted': '#64748B', // Slate-500
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-in-out',
+              'slide-in-up': 'slideInUp 0.5s ease-in-out',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: 0 },
+                '100%': { opacity: 1 },
+              },
+              slideInUp: {
+                '0%': { transform: 'translateY(20px)', opacity: 0 },
+                '100%': { transform: 'translateY(0)', opacity: 1 },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @media print {
+        body {
+          background: #fff !important;
+        }
+        header, footer, #root > div > main > div > div > div.text-center, .no-print {
+          display: none !important;
+        }
+        main.container {
+          padding: 0 !important;
+          margin: 0 !important;
+          max-width: 100% !important;
+        }
+        .printable-area {
+          box-shadow: none !important;
+          border: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          animation: none !important;
+        }
+        .itinerary-day-panel {
+          display: block !important;
+          animation: none !important;
+          page-break-before: always;
+          margin-top: 2rem;
+        }
+        .itinerary-day-panel:first-of-type {
+          page-break-before: auto;
+          margin-top: 0;
+        }
+        .activity-card, .alternative-card {
+            page-break-inside: avoid;
+        }
+        .bg-white {
+            background-color: transparent !important;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.16.0",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "uuid": "https://aistudiocdn.com/uuid@^13.0.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-gradient-to-br from-light to-orange-100">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
