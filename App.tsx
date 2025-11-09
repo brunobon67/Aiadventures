@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'https://aistudiocdn.com/react@^19.1.1';
 import ItineraryForm from './components/ItineraryForm';
 import ItineraryDisplay from './components/ItineraryDisplay';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -7,7 +7,7 @@ import { generateItinerary } from './services/geminiService';
 import { LoginIcon, LogoutIcon, PaperAirplaneIcon, BookmarkIcon, UserIcon } from './components/icons';
 import AuthModal from './components/AuthModal';
 import SavedTripsModal from './components/SavedTripsModal';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'https://aistudiocdn.com/uuid@^13.0.0';
 
 
 // A simple user store using localStorage for demonstration purposes

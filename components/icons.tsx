@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'https://aistudiocdn.com/react@^19.1.1';
 
 type IconProps = {
   className?: string;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'https://aistudiocdn.com/react@^19.1.1';
 import { Budget, Pace } from './types';
 import { ArchitectureIcon, ArtIcon, FamilyIcon, FoodIcon, HistoryIcon, LeafIcon, NightlifeIcon, RelaxationIcon, ShoppingBagIcon, TechIcon } from './components/icons';
 

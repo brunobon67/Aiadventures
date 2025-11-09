@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'https://aistudiocdn.com/react@^19.1.1';
 import { Itinerary, Activity } from '../types';
 import { BookmarkIcon, CalendarIcon, FoodIcon, LandmarkIcon, LeafIcon, LightbulbIcon, MapPinIcon, PrintIcon, ShoppingBagIcon, SunIcon, TransitIcon, UnknownIcon } from './icons';
 

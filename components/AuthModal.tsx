@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'https://aistudiocdn.com/react@^19.1.1';
 
 // A simple hashing function for demonstration. 
 // In a real app, use a library like bcrypt.

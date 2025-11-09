@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from 'https://aistudiocdn.com/react@^19.1.1';
 
 const LoadingSpinner: React.FC = () => {
   return (

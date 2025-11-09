@@ -1,5 +1,4 @@
-
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, Type } from 'https://aistudiocdn.com/@google/genai@^1.16.0';
 import { Itinerary, ItineraryRequest } from '../types';
 
 if (!process.env.API_KEY) {
