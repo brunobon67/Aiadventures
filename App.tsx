@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'https://aistudiocdn.com/react@^19.1.1';
-import ItineraryForm from './components/ItineraryForm';
-import ItineraryDisplay from './components/ItineraryDisplay';
-import LoadingSpinner from './components/LoadingSpinner';
-import { Itinerary, ItineraryRequest, User } from './types';
-import { generateItinerary } from './services/geminiService';
-import { LoginIcon, LogoutIcon, PaperAirplaneIcon, BookmarkIcon, UserIcon } from './components/icons';
-import AuthModal from './components/AuthModal';
-import SavedTripsModal from './components/SavedTripsModal';
+import ItineraryForm from './components/ItineraryForm.tsx';
+import ItineraryDisplay from './components/ItineraryDisplay.tsx';
+import LoadingSpinner from './components/LoadingSpinner.tsx';
+import { Itinerary, ItineraryRequest, User } from './types.ts';
+import { generateItinerary } from './services/geminiService.ts';
+import { LoginIcon, LogoutIcon, PaperAirplaneIcon, BookmarkIcon, UserIcon } from './components/icons.tsx';
+import AuthModal from './components/AuthModal.tsx';
+import SavedTripsModal from './components/SavedTripsModal.tsx';
 import { v4 as uuidv4 } from 'https://aistudiocdn.com/uuid@^13.0.0';
 
 

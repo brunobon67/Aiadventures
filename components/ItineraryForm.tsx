@@ -1,7 +1,7 @@
 import React, { useState } from 'https://aistudiocdn.com/react@^19.1.1';
-import { ItineraryRequest, Pace, Budget } from '../types';
-import { INTERESTS_OPTIONS, PACE_OPTIONS, BUDGET_OPTIONS } from '../constants';
-import { CalendarIcon, MapPinIcon, PriceTagIcon, RocketLaunchIcon, RunningIcon } from './icons';
+import { ItineraryRequest, Pace, Budget } from '../types.ts';
+import { INTERESTS_OPTIONS, PACE_OPTIONS, BUDGET_OPTIONS } from '../constants.ts';
+import { CalendarIcon, MapPinIcon, PriceTagIcon, RocketLaunchIcon, RunningIcon } from './icons.tsx';
 
 interface ItineraryFormProps {
   onSubmit: (request: ItineraryRequest) => void;

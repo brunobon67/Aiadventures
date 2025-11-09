@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from 'https://aistudiocdn.com/@google/genai@^1.16.0';
-import { Itinerary, ItineraryRequest } from '../types';
+import { Itinerary, ItineraryRequest } from '../types.ts';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");

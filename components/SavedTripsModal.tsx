@@ -1,6 +1,6 @@
 import React from 'https://aistudiocdn.com/react@^19.1.1';
-import { Itinerary } from '../types';
-import { MapPinIcon, CalendarIcon } from './icons';
+import { Itinerary } from '../types.ts';
+import { MapPinIcon, CalendarIcon } from './icons.tsx';
 
 interface SavedTripsModalProps {
   trips: Itinerary[];
