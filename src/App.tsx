@@ -455,9 +455,28 @@ service cloud.firestore {
                                 </li>
                                 <li>
                                     <span className="font-semibold">Redeploy your site:</span>
-                                    <p className="text-xs mt-1">Navigate to the <code className="bg-yellow-100 p-1 rounded">Deploys</code> tab in Netlify and trigger a new deploy of your main branch. This is required for the new environment variable to be applied.</p>
+                                    <p className="text-xs mt-1">
+                                        <strong>This is a critical step!</strong> Navigate to the <code className="bg-yellow-100 p-1 rounded">Deploys</code> tab in Netlify, click "Trigger deploy", and choose "Deploy site". Environment variable changes only apply to new deploys.
+                                    </p>
                                 </li>
                             </ol>
+                            <div className="mt-6 border-t border-yellow-300 pt-4">
+                                <p className="font-bold text-yellow-900">Still not working? Troubleshooting Tips</p>
+                                <ul className="list-disc list-inside mt-2 space-y-2 text-sm">
+                                    <li>
+                                        <strong>Wait a Moment:</strong> After redeploying, wait a minute or two and then try again. Sometimes it takes a moment for the new deployment to be fully active.
+                                    </li>
+                                    <li>
+                                        <strong>Enable the API:</strong> Make sure the "Generative Language API" is enabled in your Google Cloud project. You can check it here: <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-yellow-900">Enable API</a>.
+                                    </li>
+                                    <li>
+                                        <strong>Check Billing:</strong> Many Google Cloud services require a billing account to be linked to the project, even if you are within the free tier. Ensure your project is linked to an active billing account.
+                                    </li>
+                                    <li>
+                                        <strong>No API Key Restrictions:</strong> When creating the API key, ensure you have not added any "API restrictions" or "Application restrictions". For a server-side key used in a Netlify function, it's safest to start with no restrictions.
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     ) : (
                         <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
