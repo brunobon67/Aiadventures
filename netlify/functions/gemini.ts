@@ -77,8 +77,7 @@ export default async (req: Request) => {
   }
 
   try {
-    // const apiKey = process.env.API_KEY; // Using hardcoded key for temporary debugging
-    const apiKey = "AIzaSyAzehCYnRjwctLnYKpBNWTsitoEQ9U6RUc"; // <-- TEMPORARY FOR DEBUGGING
+    const apiKey = process.env.API_KEY; 
 
     if (!apiKey) {
       return new Response(JSON.stringify({ error: "Configuration Error: The API_KEY environment variable is not set on the server. Please add it in your Netlify site settings." }), {
