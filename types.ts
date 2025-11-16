@@ -44,4 +44,23 @@ export interface Itinerary {
 
 export interface User {
     email: string;
+    uid: string;
+}
+
+export interface Event {
+  name: string;
+  date: string;
+  location: string;
+  description: string;
+}
+
+export interface EventSource {
+  uri: string;
+  title: string;
+}
+
+export interface FoundEvents {
+  events: Event[];
+  sources: EventSource[];
+  city: string;
 }

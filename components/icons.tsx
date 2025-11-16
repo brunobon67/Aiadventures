@@ -132,6 +132,18 @@ export const LogoutIcon: React.FC<IconProps> = ({ className }) => (
     </svg>
 );
 
+export const SparklesIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.25 22.5l-.648-1.938a2.25 2.25 0 01-1.423-1.423L12 18.75l1.938-.648a2.25 2.25 0 011.423-1.423L17.25 15l.648 1.938a2.25 2.25 0 011.423 1.423L21 18.75l-1.938.648a2.25 2.25 0 01-1.423 1.423z" />
+    </svg>
+);
+
+export const LinkIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+    </svg>
+);
+
 
 export const HistoryIcon: React.FC<IconProps> = LandmarkIcon;
 export const ArtIcon: React.FC<IconProps> = ({className}) => (
@@ -171,6 +183,18 @@ export const FamilyIcon: React.FC<IconProps> = ({className}) => (
 );
 export const TechIcon: React.FC<IconProps> = ({className}) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
-        <path fillRule="evenodd" d="M11.25 2.25a.75.75 0 00-1.5 0v1.51a4.52 4.52 0 00-1.874.526l-1.06-1.06a.75.75 0 00-1.06 1.06l1.06 1.06a4.52 4.52 0 00-.527 1.874H4.75a.75.75 0 000 1.5h1.51a4.52 4.52 0 00.526 1.874l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06a4.52 4.52 0 001.874.527v1.51a.75.75 0 001.5 0v-1.51a4.52 4.52 0 001.874-.526l1.06 1.06a.75.75 0 001.06-1.06l-1.06-1.06a4.52 4.52 0 00.527-1.874h1.51a.75.75 0 000-1.5h-1.51a4.52 4.52 0 00-.526-1.874l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06a4.52 4.52 0 00-1.874-.527V2.25zM10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" clipRule="evenodd" />
+        <path fillRule="evenodd" d="M11.25 2.25a.75.75 0 00-1.5 0v1.51a4.52 4.52 0 00-1.874.526l-1.06-1.06a.75.75 0 00-1.06 1.06l1.06 1.06a4.52 4.52 0 00-.527 1.874H4.75a.75.75 0 000 1.5h1.51a4.52 4.52 0 00.526 1.874l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06a4.52 4.52 0 001.874.527v1.51a.75.75 0 001.5 0v-1.51a4.52 4.52 0 001.874-.526l1.06 1.06a.75.75 0 001.06-1.06l-1.06-1.06a4.52 4.52 0 00.527-1.874h1.51a.75.75 0 000 1.5h-1.51a4.52 4.52 0 00-.526-1.874l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06a4.52 4.52 0 00-1.874-.527V2.25zM10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" clipRule="evenodd" />
+    </svg>
+);
+
+export const LockClosedIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 00-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+    </svg>
+);
+
+export const CheckIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
     </svg>
 );

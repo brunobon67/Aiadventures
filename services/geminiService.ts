@@ -1,98 +1,78 @@
-import { GoogleGenAI, Type } from 'https://aistudiocdn.com/@google/genai@^1.16.0';
-import { Itinerary, ItineraryRequest } from '../types.ts';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
+import { Itinerary, ItineraryRequest, FoundEvents, Event } from '../types.ts';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// --- Firebase Initialization ---
+// The configuration below is for the CLIENT-SIDE Firebase SDK. It is meant to be public.
+// Your database is protected by the Firestore Security Rules you set up, not by hiding these keys.
+export const firebaseConfig = {
+  apiKey: "AIzaSyDugWy1ZE7Nf_oDTWljAK04BpM8zyu1d34",
+  authDomain: "ai-travel-itinerary-8688e.firebaseapp.com",
+  projectId: "ai-travel-itinerary-8688e",
+  storageBucket: "ai-travel-itinerary-8688e.firebasestorage.app",
+  messagingSenderId: "545364703811",
+  appId: "1:545364703811:web:60e1afcdeb4b2d073f72f6",
+  measurementId: "G-HRLR0S9MRK"
+};
 
-const itinerarySchema = {
-  type: Type.OBJECT,
-  properties: {
-    city: { type: Type.STRING, description: "The city for the itinerary." },
-    country: { type: Type.STRING, description: "The country where the city is located." },
-    dailyPlans: {
-      type: Type.ARRAY,
-      description: "An array of daily plans for the trip.",
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          day: { type: Type.INTEGER, description: "The day number of the trip (e.g., 1, 2, 3)." },
-          date: { type: Type.STRING, description: "The specific date for this day's plan (e.g., 'July 20, 2024')." },
-          theme: { type: Type.STRING, description: "A creative theme for the day's activities (e.g., 'Historical Heartbeat')." },
-          activities: {
-            type: Type.ARRAY,
-            description: "A list of activities for the day.",
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                time: { type: Type.STRING, description: "Suggested time for the activity (e.g., '9:00 AM - 11:00 AM')." },
-                description: { type: Type.STRING, description: "A detailed description of the activity." },
-                location: { type: Type.STRING, description: "The name and address of the location." },
-                transit: { type: Type.STRING, description: "A short hint about how to get there (e.g., '15-min walk from last activity', 'Metro Line 1')." },
-                type: { type: Type.STRING, description: "A category for the activity (e.g., 'Food & Culinary', 'Museum', 'Outdoor')." }
-              },
-              required: ["time", "description", "location", "transit", "type"]
-            }
-          },
-          alternatives: {
-            type: Type.ARRAY,
-            description: "A few alternative suggestions if the user wants to swap an activity.",
-            items: { type: Type.STRING }
-          }
-        },
-        required: ["day", "date", "theme", "activities", "alternatives"]
-      }
-    }
-  },
-  required: ["city", "country", "dailyPlans"]
+// Check if the user has replaced the placeholder configuration
+export const isFirebaseConfigured = firebaseConfig.apiKey !== "REPLACE_WITH_YOUR_API_KEY" && firebaseConfig.projectId !== "REPLACE_WITH_YOUR_PROJECT_ID" && firebaseConfig.apiKey !== "AIzaSyFAKE-KEY-FOR-UI-TESTING-ONLY";
+
+// Initialize Firebase only if it has been configured
+const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
+// --- End Firebase Initialization ---
+
+
+// The Gemini API calls have been moved to a secure serverless function.
+// The frontend will now call this function instead of the Gemini API directly.
+
+const callApiFunction = async (action: string, request: ItineraryRequest) => {
+  const response = await fetch('/.netlify/functions/gemini', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action, request }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({ error: 'An unknown error occurred.' }));
+    throw new Error(errorBody.error || `Request failed with status ${response.status}`);
+  }
+
+  return response.json();
 };
 
 export const generateItinerary = async (request: ItineraryRequest): Promise<Itinerary> => {
-  const prompt = `
-    Create a personalized travel itinerary based on the following details.
-    The response must be a valid JSON object that adheres to the provided schema. Do not include any markdown formatting like \`\`\`json.
-    
-    Travel Details:
-    - City: ${request.city}
-    - Start Date: ${request.startDate}
-    - End Date: ${request.endDate}
-    - Interests: ${request.interests.join(', ')}
-    - Pace: ${request.pace}
-    - Budget: ${request.budget}
-    
-    Instructions:
-    1.  Generate a day-by-day itinerary from the start date to the end date.
-    2.  For each day, provide a creative theme and a sequence of timed activities.
-    3.  Each activity must include a description, location (with address if possible), and a transit hint.
-    4.  Categorize each activity based on the user's interests.
-    5.  Include 2-3 alternative suggestions for each day.
-    6.  The number of activities per day should reflect the user's chosen 'Pace'.
-    7.  The type of activities and venues should reflect the user's chosen 'Budget'.
-  `;
-
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: itinerarySchema,
-      },
-    });
-
-    const jsonText = response.text.trim();
-    const itineraryData: Itinerary = JSON.parse(jsonText);
+    const itineraryData: Itinerary = await callApiFunction('generateItinerary', request);
     
     // Simple validation
     if (!itineraryData.city || !itineraryData.dailyPlans || itineraryData.dailyPlans.length === 0) {
       throw new Error("Generated itinerary is missing required fields.");
     }
-
     return itineraryData;
   } catch (error) {
-    console.error("Error generating itinerary from Gemini API:", error);
-    throw new Error("The AI failed to generate a valid itinerary. This could be due to an unusual request or an API issue. Please try again.");
+    console.error("Error calling generate itinerary function:", error);
+    throw new Error(`The AI failed to generate a valid itinerary. ${error.message}`);
   }
+};
+
+export const findLocalEvents = async (request: ItineraryRequest): Promise<FoundEvents> => {
+    try {
+        const result: FoundEvents = await callApiFunction('findLocalEvents', request);
+
+        if (!Array.isArray(result.events)) {
+             throw new Error("Generated events data is not in the expected format (array).");
+        }
+
+        return { ...result, city: request.city };
+    } catch (error) {
+        console.error("Error calling find local events function:", error);
+        throw new Error(`The AI failed to find local events. ${error.message}`);
+    }
 };

@@ -1,11 +1,13 @@
 import React, { useState } from 'https://aistudiocdn.com/react@^19.1.1';
 import { ItineraryRequest, Pace, Budget } from '../types.ts';
 import { INTERESTS_OPTIONS, PACE_OPTIONS, BUDGET_OPTIONS } from '../constants.ts';
-import { CalendarIcon, MapPinIcon, PriceTagIcon, RocketLaunchIcon, RunningIcon } from './icons.tsx';
+import { CalendarIcon, MapPinIcon, PriceTagIcon, RocketLaunchIcon, RunningIcon, SparklesIcon, LockClosedIcon } from './icons.tsx';
 
 interface ItineraryFormProps {
   onSubmit: (request: ItineraryRequest) => void;
+  onFindEvents: (request: ItineraryRequest) => void;
   isLoading: boolean;
+  isFirebaseConfigured: boolean;
 }
 
 const FormSection: React.FC<{ title: string, step: string, children: React.ReactNode }> = ({ title, step, children }) => (
@@ -21,7 +23,7 @@ const FormSection: React.FC<{ title: string, step: string, children: React.React
 );
 
 
-const ItineraryForm: React.FC<ItineraryFormProps> = ({ onSubmit, isLoading }) => {
+const ItineraryForm: React.FC<ItineraryFormProps> = ({ onSubmit, onFindEvents, isLoading, isFirebaseConfigured }) => {
   const [city, setCity] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -38,18 +40,33 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({ onSubmit, isLoading }) =>
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const validateAndGetData = (): ItineraryRequest | null => {
     setError('');
     if (!city || !startDate || !endDate || interests.length === 0) {
       setError('Please fill out all fields and select at least one interest.');
-      return;
+      return null;
     }
     if (new Date(startDate) > new Date(endDate)) {
         setError('End date must be after the start date.');
-        return;
+        return null;
     }
-    onSubmit({ city, startDate, endDate, interests, pace, budget });
+    return { city, startDate, endDate, interests, pace, budget };
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const requestData = validateAndGetData();
+    if (requestData) {
+      onSubmit(requestData);
+    }
+  };
+
+  const handleFindEvents = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const requestData = validateAndGetData();
+    if (requestData) {
+        onFindEvents(requestData);
+    }
   };
   
   const today = new Date().toISOString().split('T')[0];
@@ -127,9 +144,9 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({ onSubmit, isLoading }) =>
          </div>
       </FormSection>
       
-      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      <div className="pt-4 space-y-3">
+        {error && <p className="text-red-500 text-sm text-center pb-2">{error}</p>}
 
-      <div className="pt-4">
         <button
             type="submit"
             disabled={isLoading}
@@ -137,6 +154,24 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({ onSubmit, isLoading }) =>
         >
             <RocketLaunchIcon className="h-6 w-6 mr-2" />
             Create My Adventure!
+        </button>
+
+        <div className="relative flex py-2 items-center">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="flex-shrink mx-4 text-xs font-semibold text-muted uppercase">Premium</span>
+            <div className="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        <button
+            type="button"
+            onClick={handleFindEvents}
+            disabled={isLoading || !isFirebaseConfigured}
+            className="w-full flex justify-center items-center bg-secondary text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-sky-600 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary disabled:bg-gray-400 disabled:cursor-not-allowed transform hover:scale-105"
+            title={!isFirebaseConfigured ? "Please configure Firebase to use this feature" : "Login to find local events for your trip"}
+        >
+            <SparklesIcon className="h-5 w-5 mr-2" />
+            Find Local Events
+            {!isFirebaseConfigured && <LockClosedIcon className="h-4 w-4 ml-2" />}
         </button>
       </div>
     </form>

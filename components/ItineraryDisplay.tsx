@@ -1,10 +1,11 @@
 import React, { useState } from 'https://aistudiocdn.com/react@^19.1.1';
 import { Itinerary, Activity } from '../types.ts';
-import { BookmarkIcon, CalendarIcon, FoodIcon, LandmarkIcon, LeafIcon, LightbulbIcon, MapPinIcon, PrintIcon, ShoppingBagIcon, SunIcon, TransitIcon, UnknownIcon } from './icons.tsx';
+import { BookmarkIcon, CalendarIcon, CheckIcon, FoodIcon, LandmarkIcon, LeafIcon, LightbulbIcon, MapPinIcon, PrintIcon, ShoppingBagIcon, SunIcon, TransitIcon, UnknownIcon } from './icons.tsx';
 
 interface ItineraryDisplayProps {
   itinerary: Itinerary;
   onSave: () => void;
+  isFirebaseConfigured: boolean;
 }
 
 const getActivityIcon = (type: string) => {
@@ -37,8 +38,9 @@ const ActivityCard: React.FC<{ activity: Activity }> = ({ activity }) => (
   </div>
 );
 
-const ItineraryDisplay: React.FC<ItineraryDisplayProps> = ({ itinerary, onSave }) => {
+const ItineraryDisplay: React.FC<ItineraryDisplayProps> = ({ itinerary, onSave, isFirebaseConfigured }) => {
   const [activeDayIndex, setActiveDayIndex] = useState(0);
+  const isSaved = !!itinerary.id;
 
   const handlePrint = () => {
     window.print();
@@ -62,9 +64,27 @@ const ItineraryDisplay: React.FC<ItineraryDisplayProps> = ({ itinerary, onSave }
                 <p className="text-3xl font-bold text-primary">{itinerary.city}, {itinerary.country}</p>
             </div>
             <div className="flex items-center gap-2 no-print">
-                <button onClick={onSave} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-secondary rounded-lg hover:bg-sky-600 transition-colors">
-                    <BookmarkIcon className="h-4 w-4" />
-                    Save Plan
+                <button 
+                    onClick={onSave} 
+                    disabled={isSaved || !isFirebaseConfigured}
+                    title={!isFirebaseConfigured ? "Please configure Firebase to save plans" : (isSaved ? "This plan is already saved" : "Save this plan")}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white rounded-lg transition-colors w-32 ${
+                        isSaved 
+                        ? 'bg-green-500 cursor-not-allowed' 
+                        : 'bg-secondary hover:bg-sky-600'
+                    } disabled:opacity-60 disabled:hover:bg-secondary disabled:cursor-not-allowed`}
+                >
+                    {isSaved ? (
+                        <>
+                            <CheckIcon className="h-4 w-4" />
+                            Plan Saved!
+                        </>
+                    ) : (
+                        <>
+                            <BookmarkIcon className="h-4 w-4" />
+                            Save Plan
+                        </>
+                    )}
                 </button>
                 <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-muted bg-light/50 border border-gray-200/50 rounded-lg hover:bg-gray-100 hover:text-dark transition-colors">
                     <PrintIcon className="h-4 w-4" />
