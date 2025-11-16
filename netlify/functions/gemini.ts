@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from '@google/genai';
 
 // Define types needed for the function, mirroring the main `types.ts`
@@ -58,11 +59,9 @@ const findLocalEventsInternal = async (request: ItineraryRequest, ai: GoogleGenA
     })).filter(source => source.uri) || [];
     
     const textResponse = response.text.trim();
-    // A more robust way to find the JSON part of the response
     const jsonMatch = textResponse.match(/```json\n([\s\S]*?)\n```|({[\s\S]*})/);
     if (!jsonMatch) throw new Error("AI did not return a valid JSON object.");
     
-    // Use the first valid capture group
     const jsonString = jsonMatch[1] || jsonMatch[2];
     const parsedJson = JSON.parse(jsonString);
     return { events: parsedJson.events || [], sources };
@@ -70,9 +69,11 @@ const findLocalEventsInternal = async (request: ItineraryRequest, ai: GoogleGenA
 
 
 // --- Netlify Function Handler ---
-// This is the entry point for the serverless function.
 export default async (req: Request) => {
+  console.log("Netlify function 'gemini' invoked.");
+
   if (req.method !== 'POST') {
+    console.log(`Method Not Allowed: ${req.method}`);
     return new Response('Method Not Allowed', { status: 405 });
   }
 
@@ -80,35 +81,49 @@ export default async (req: Request) => {
     const apiKey = process.env.API_KEY; 
 
     if (!apiKey) {
+      console.error("CRITICAL ERROR: API_KEY environment variable is not set on the server.");
       return new Response(JSON.stringify({ error: "Configuration Error: The API_KEY environment variable is not set on the server. Please add it in your Netlify site settings." }), {
         headers: { 'Content-Type': 'application/json' },
         status: 500,
       });
     }
+
+    // Log that the key was found, but mask its value for security.
+    console.log(`API_KEY loaded successfully. Key ending in: ...${apiKey.slice(-4)}`);
     
-    const ai = new GoogleGenAI({ apiKey });
     const { action, request } = await req.json();
+    console.log(`Executing action: '${action}' for city: '${request.city}'`);
     let result;
 
     try {
+        // Initialize the client right before the call to ensure it's fresh.
+        const ai = new GoogleGenAI({ apiKey });
+
         if (action === 'generateItinerary') {
             result = await generateItineraryInternal(request, ai);
         } else if (action === 'findLocalEvents') {
             result = await findLocalEventsInternal(request, ai);
         } else {
-            throw new Error('Invalid action provided.');
+            throw new Error(`Invalid action provided: ${action}`);
         }
+        
+        console.log("Gemini API call successful. Sending response to client.");
+
     } catch (apiError: any) {
-        console.error("Gemini API Error:", apiError);
-        // Check for specific authentication error messages from the API
+        console.error("--- GEMINI API ERROR ---");
+        console.error("Status:", apiError.status);
+        console.error("Message:", apiError.message);
+        console.error("Full Error Object:", JSON.stringify(apiError, null, 2));
+        console.error("--- END GEMINI API ERROR ---");
+
         if (apiError.message && (apiError.message.includes('401') || apiError.message.toLowerCase().includes('unauthorized') || apiError.message.toLowerCase().includes('api key not valid'))) {
             return new Response(JSON.stringify({ error: "Authentication Error: The API key is invalid or not authorized. Please check your API_KEY in Netlify and make sure it is correct and enabled." }), {
                 headers: { 'Content-Type': 'application/json' },
-                status: 401, // Send a clear "Unauthorized" status
+                status: 401,
             });
         }
-        // Re-throw other API errors to be caught by the outer block
-        throw apiError;
+        
+        throw new Error(`Gemini API failed: ${apiError.message}`);
     }
 
     return new Response(JSON.stringify(result), {
@@ -117,7 +132,7 @@ export default async (req: Request) => {
     });
 
   } catch (error: any) {
-    console.error("Error in Netlify function:", error);
+    console.error("FATAL ERROR in Netlify function handler:", error);
     return new Response(JSON.stringify({ error: error.message || 'An unexpected server error occurred.' }), {
       headers: { 'Content-Type': 'application/json' },
       status: 500,
