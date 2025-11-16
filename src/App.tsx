@@ -76,20 +76,11 @@ const App: React.FC = () => {
         
         try {
             const tripsRef = collection(db, "trips");
-            // Query only by userId. Sorting will be done on the client.
-            const q = query(tripsRef, where("userId", "==", user.uid));
+            const q = query(tripsRef, where("userId", "==", user.uid), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
             
-            const trips = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as TripWithTimestamp[];
-
-            // Sort trips on the client-side to avoid needing a composite index.
-            const sortedTrips = trips.sort((a, b) => {
-                const timeA = a.createdAt?.toDate().getTime() || 0;
-                const timeB = b.createdAt?.toDate().getTime() || 0;
-                return timeB - timeA; // Sort descending (newest first)
-            });
-
-            setSavedTrips(sortedTrips);
+            const trips = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Itinerary[];
+            setSavedTrips(trips);
         } catch (err: any) {
              console.error("Failed to fetch user trips:", err);
             // Improved error handling for missing Firestore index
