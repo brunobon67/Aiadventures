@@ -77,21 +77,37 @@ export default async (req: Request) => {
   }
 
   try {
-    // Your Gemini API key is stored securely as an environment variable on Netlify.
-    if (!process.env.API_KEY) {
-      throw new Error("API_KEY is not set in the server environment.");
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "Configuration Error: The API_KEY environment variable is not set on the server. Please add it in your Netlify site settings." }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 500,
+      });
     }
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
+    const ai = new GoogleGenAI({ apiKey });
     const { action, request } = await req.json();
     let result;
 
-    if (action === 'generateItinerary') {
-      result = await generateItineraryInternal(request, ai);
-    } else if (action === 'findLocalEvents') {
-      result = await findLocalEventsInternal(request, ai);
-    } else {
-      throw new Error('Invalid action provided.');
+    try {
+        if (action === 'generateItinerary') {
+            result = await generateItineraryInternal(request, ai);
+        } else if (action === 'findLocalEvents') {
+            result = await findLocalEventsInternal(request, ai);
+        } else {
+            throw new Error('Invalid action provided.');
+        }
+    } catch (apiError: any) {
+        console.error("Gemini API Error:", apiError);
+        // Check for specific authentication error messages from the API
+        if (apiError.message && (apiError.message.includes('401') || apiError.message.toLowerCase().includes('unauthorized') || apiError.message.toLowerCase().includes('api key not valid'))) {
+            return new Response(JSON.stringify({ error: "Authentication Error: The API key is invalid or not authorized. Please check your API_KEY in Netlify and make sure it is correct and enabled." }), {
+                headers: { 'Content-Type': 'application/json' },
+                status: 401, // Send a clear "Unauthorized" status
+            });
+        }
+        // Re-throw other API errors to be caught by the outer block
+        throw apiError;
     }
 
     return new Response(JSON.stringify(result), {
@@ -101,7 +117,7 @@ export default async (req: Request) => {
 
   } catch (error: any) {
     console.error("Error in Netlify function:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error.message || 'An unexpected server error occurred.' }), {
       headers: { 'Content-Type': 'application/json' },
       status: 500,
     });
