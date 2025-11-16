@@ -27,6 +27,7 @@ import {
   serverTimestamp,
   Timestamp,
 } from 'firebase/firestore';
+import ApiKeyError from './components/ApiKeyError';
 
 type AuthMode = 'login' | 'register';
 type TripWithTimestamp = Itinerary & { createdAt?: Timestamp };
@@ -368,7 +369,9 @@ service cloud.firestore {
               {isLoading && <LoadingSpinner />}
               {!isLoading && error && (
                  <div className="animate-fade-in" role="alert">
-                    {error.startsWith('firestore-index-required:') ? (
+                    {(error.includes('API_KEY') || error.includes('Authentication Error')) ? (
+                         <ApiKeyError />
+                    ) : error.startsWith('firestore-index-required:') ? (
                          <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 sm:p-6 rounded-md">
                             <p className="font-bold text-lg text-yellow-900">Action Required: Create Firestore Index</p>
                             <p className="mt-2">Your saved trips couldn't be loaded because a required database index is missing. This is needed to sort your trips by creation date efficiently.</p>
@@ -422,59 +425,6 @@ service cloud.firestore {
                                     <li><strong>Correct Project ID:</strong> Make sure the `projectId` in `src/services/geminiService.ts` ("{firebaseConfig.projectId}") matches the one in your Firebase console URL.</li>
                                     <li><strong>Authentication Enabled:</strong> Ensure "Email/Password" is enabled in Firebase Authentication &gt; "Sign-in method" tab.</li>
                                     <li><strong>Wait a minute:</strong> Sometimes rules take a moment to become active. Give it 60 seconds and try saving again.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    ) : (error.includes('API_KEY') || error.includes('Authentication Error')) ? (
-                         <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 sm:p-6 rounded-md">
-                            <p className="font-bold text-lg text-yellow-900">Action Required: Configure Gemini API Key</p>
-                            <p className="mt-2">The app couldn't connect to the AI service. This is likely because the Gemini API Key is missing or invalid in your Netlify project settings.</p>
-                            <p className="mt-3 font-medium">Please follow these steps to fix it:</p>
-                            <ol className="list-decimal list-inside mt-2 space-y-4">
-                                <li>
-                                    <span className="font-semibold">Get your Gemini API Key:</span>
-                                    <br/>
-                                    <a 
-                                        href="https://aistudio.google.com/app/apikey"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-block mt-2 bg-secondary text-white font-bold py-2 px-4 rounded hover:bg-sky-600 transition-colors text-sm"
-                                    >
-                                        Create API Key in Google AI Studio
-                                    </a>
-                                </li>
-                                <li>
-                                    <span className="font-semibold">Add the key to your Netlify project:</span>
-                                    <ul className="list-disc list-inside mt-2 pl-4 space-y-1 text-xs">
-                                        <li>Go to your Netlify site dashboard.</li>
-                                        <li>Navigate to <code className="bg-yellow-100 p-1 rounded">Site configuration</code> &gt; <code className="bg-yellow-100 p-1 rounded">Environment variables</code>.</li>
-                                        <li>Click <code className="bg-yellow-100 p-1 rounded">Add a variable</code>.</li>
-                                        <li>Set the <strong>Key</strong> to exactly <code className="bg-yellow-100 p-1 rounded font-mono">API_KEY</code>.</li>
-                                        <li>Paste your key into the <strong>Value</strong> field.</li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span className="font-semibold">Redeploy your site:</span>
-                                    <p className="text-xs mt-1">
-                                        <strong>This is a critical step!</strong> Navigate to the <code className="bg-yellow-100 p-1 rounded">Deploys</code> tab in Netlify, click "Trigger deploy", and choose "Deploy site". Environment variable changes only apply to new deploys.
-                                    </p>
-                                </li>
-                            </ol>
-                            <div className="mt-6 border-t border-yellow-300 pt-4">
-                                <p className="font-bold text-yellow-900">Still not working? Troubleshooting Tips</p>
-                                <ul className="list-disc list-inside mt-2 space-y-2 text-sm">
-                                    <li>
-                                        <strong>Wait a Moment:</strong> After redeploying, wait a minute or two and then try again. Sometimes it takes a moment for the new deployment to be fully active.
-                                    </li>
-                                    <li>
-                                        <strong>Enable the API:</strong> Make sure the "Generative Language API" is enabled in your Google Cloud project. You can check it here: <a href="https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold hover:text-yellow-900">Enable API</a>.
-                                    </li>
-                                    <li>
-                                        <strong>Check Billing:</strong> Many Google Cloud services require a billing account to be linked to the project, even if you are within the free tier. Ensure your project is linked to an active billing account.
-                                    </li>
-                                    <li>
-                                        <strong>No API Key Restrictions:</strong> When creating the API key, ensure you have not added any "API restrictions" or "Application restrictions". For a server-side key used in a Netlify function, it's safest to start with no restrictions.
-                                    </li>
                                 </ul>
                             </div>
                         </div>
