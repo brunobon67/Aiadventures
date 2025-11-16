@@ -425,6 +425,40 @@ service cloud.firestore {
                                 </ul>
                             </div>
                         </div>
+                    ) : (error.includes('API_KEY') || error.includes('Authentication Error')) ? (
+                         <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 sm:p-6 rounded-md">
+                            <p className="font-bold text-lg text-yellow-900">Action Required: Configure Gemini API Key</p>
+                            <p className="mt-2">The app couldn't connect to the AI service. This is likely because the Gemini API Key is missing or invalid in your Netlify project settings.</p>
+                            <p className="mt-3 font-medium">Please follow these steps to fix it:</p>
+                            <ol className="list-decimal list-inside mt-2 space-y-4">
+                                <li>
+                                    <span className="font-semibold">Get your Gemini API Key:</span>
+                                    <br/>
+                                    <a 
+                                        href="https://aistudio.google.com/app/apikey"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-block mt-2 bg-secondary text-white font-bold py-2 px-4 rounded hover:bg-sky-600 transition-colors text-sm"
+                                    >
+                                        Create API Key in Google AI Studio
+                                    </a>
+                                </li>
+                                <li>
+                                    <span className="font-semibold">Add the key to your Netlify project:</span>
+                                    <ul className="list-disc list-inside mt-2 pl-4 space-y-1 text-xs">
+                                        <li>Go to your Netlify site dashboard.</li>
+                                        <li>Navigate to <code className="bg-yellow-100 p-1 rounded">Site configuration</code> &gt; <code className="bg-yellow-100 p-1 rounded">Environment variables</code>.</li>
+                                        <li>Click <code className="bg-yellow-100 p-1 rounded">Add a variable</code>.</li>
+                                        <li>Set the <strong>Key</strong> to exactly <code className="bg-yellow-100 p-1 rounded font-mono">API_KEY</code>.</li>
+                                        <li>Paste your key into the <strong>Value</strong> field.</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span className="font-semibold">Redeploy your site:</span>
+                                    <p className="text-xs mt-1">Navigate to the <code className="bg-yellow-100 p-1 rounded">Deploys</code> tab in Netlify and trigger a new deploy of your main branch. This is required for the new environment variable to be applied.</p>
+                                </li>
+                            </ol>
+                        </div>
                     ) : (
                         <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
                             <p className="font-bold">An Error Occurred</p>
