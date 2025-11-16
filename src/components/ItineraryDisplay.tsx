@@ -162,7 +162,7 @@ const ItineraryDisplay: React.FC<ItineraryDisplayProps> = ({ itinerary, onSave, 
             </div>
         ))}
       </div>
-      <div className="text-center pt-6 border-t border-gray-200 no-print">
+       <div className="text-center pt-6 border-t border-gray-200 no-print">
             <button onClick={onReset} className="bg-primary text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-primary-hover transition-transform hover:scale-105 flex items-center gap-2 mx-auto">
                 <ArrowPathIcon className="h-5 w-5"/>
                 Plan a New Trip
