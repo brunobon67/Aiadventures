@@ -82,7 +82,7 @@ const App: React.FC = () => {
             const trips = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Itinerary[];
             setSavedTrips(trips);
         } catch (err: any) {
-             console.error("Failed to fetch user trips:", err);
+            console.error("Failed to fetch user trips:", err);
             // Improved error handling for missing Firestore index
             if (err.code === 'failed-precondition' && err.message.includes('index')) {
                  const queryParts = err.message.match(/you can create it here: (https?:\/\/[^\s]+)/);
@@ -118,7 +118,7 @@ const App: React.FC = () => {
       const result = await generateItinerary(request);
       setItinerary(result);
       setResultView('itinerary');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to generate itinerary. Please try again.');
       setResultView(null);
@@ -141,7 +141,7 @@ const App: React.FC = () => {
         const result = await findLocalEvents(request);
         setFoundEvents(result);
         setResultView('events');
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
         setError(err instanceof Error ? err.message : 'Failed to find events. Please try again.');
         setResultView(null);

@@ -6,18 +6,19 @@ import { getFirestore } from "firebase/firestore";
 // --- Firebase Initialization ---
 // The configuration below is for the CLIENT-SIDE Firebase SDK. It is meant to be public.
 // Your database is protected by the Firestore Security Rules you set up, not by hiding these keys.
+// TODO: Replace this with your own Firebase project configuration.
 export const firebaseConfig = {
-  apiKey: "AIzaSyDugWy1ZE7Nf_oDTWljAK04BpM8zyu1d34",
-  authDomain: "ai-travel-itinerary-8688e.firebaseapp.com",
-  projectId: "ai-travel-itinerary-8688e",
-  storageBucket: "ai-travel-itinerary-8688e.firebasestorage.app",
-  messagingSenderId: "545364703811",
-  appId: "1:545364703811:web:60e1afcdeb4b2d073f72f6",
-  measurementId: "G-HRLR0S9MRK"
+  apiKey: "REPLACE_WITH_YOUR_API_KEY",
+  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
+  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
+  appId: "REPLACE_WITH_YOUR_APP_ID",
 };
 
+
 // Check if the user has replaced the placeholder configuration
-export const isFirebaseConfigured = firebaseConfig.apiKey !== "REPLACE_WITH_YOUR_API_KEY" && firebaseConfig.projectId !== "REPLACE_WITH_YOUR_PROJECT_ID" && firebaseConfig.apiKey !== "AIzaSyFAKE-KEY-FOR-UI-TESTING-ONLY";
+export const isFirebaseConfigured = firebaseConfig.apiKey !== "REPLACE_WITH_YOUR_API_KEY" && firebaseConfig.projectId !== "REPLACE_WITH_YOUR_PROJECT_ID";
 
 // Initialize Firebase only if it has been configured
 const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
