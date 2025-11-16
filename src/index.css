@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+  header, footer, #root > div > main > div > div > div.text-center, .no-print {
+    display: none !important;
+  }
+  main.container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  .printable-area {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    animation: none !important;
+  }
+  .itinerary-day-panel {
+    display: block !important;
+    animation: none !important;
+    page-break-before: always;
+    margin-top: 2rem;
+  }
+  .itinerary-day-panel:first-of-type {
+    page-break-before: auto;
+    margin-top: 0;
+  }
+  .activity-card, .alternative-card {
+      page-break-inside: avoid;
+  }
+  .bg-white {
+      background-color: transparent !important;
+  }
+}

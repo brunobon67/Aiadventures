@@ -1,6 +1,6 @@
-import React from 'https://aistudiocdn.com/react@^19.1.1';
-import { Budget, Pace } from './types.ts';
-import { ArchitectureIcon, ArtIcon, FamilyIcon, FoodIcon, HistoryIcon, LeafIcon, NightlifeIcon, RelaxationIcon, ShoppingBagIcon, TechIcon } from './components/icons.tsx';
+import React from 'react';
+import { Budget, Pace } from './types';
+import { ArchitectureIcon, ArtIcon, FamilyIcon, FoodIcon, HistoryIcon, LeafIcon, NightlifeIcon, RelaxationIcon, ShoppingBagIcon, TechIcon } from './components/icons';
 
 // IMPORTANT: Replace this with the URL of your own GitHub repository!
 export const GITHUB_REPO_URL = 'https://github.com/your-username/your-repo-name';

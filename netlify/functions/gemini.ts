@@ -1,5 +1,4 @@
-
-import { GoogleGenAI, Type } from 'https://aistudiocdn.com/@google/genai@^1.16.0';
+import { GoogleGenAI, Type } from '@google/genai';
 
 // Define types needed for the function, mirroring the main `types.ts`
 enum Pace { Relaxed = 'Relaxed', Moderate = 'Moderate', Packed = 'Packed' }
@@ -59,10 +58,13 @@ const findLocalEventsInternal = async (request: ItineraryRequest, ai: GoogleGenA
     })).filter(source => source.uri) || [];
     
     const textResponse = response.text.trim();
-    const jsonMatch = textResponse.match(/{[\s\S]*}/);
+    // A more robust way to find the JSON part of the response
+    const jsonMatch = textResponse.match(/```json\n([\s\S]*?)\n```|({[\s\S]*})/);
     if (!jsonMatch) throw new Error("AI did not return a valid JSON object.");
     
-    const parsedJson = JSON.parse(jsonMatch[0]);
+    // Use the first valid capture group
+    const jsonString = jsonMatch[1] || jsonMatch[2];
+    const parsedJson = JSON.parse(jsonString);
     return { events: parsedJson.events || [], sources };
 };
 
@@ -75,12 +77,11 @@ export default async (req: Request) => {
   }
 
   try {
-    // IMPORTANT: Your Gemini API key is stored securely as an environment variable on Netlify.
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not set in the server environment.");
+    // Your Gemini API key is stored securely as an environment variable on Netlify.
+    if (!process.env.API_KEY) {
+      throw new Error("API_KEY is not set in the server environment.");
     }
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const { action, request } = await req.json();
     let result;
@@ -98,7 +99,7 @@ export default async (req: Request) => {
       status: 200,
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in Netlify function:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { 'Content-Type': 'application/json' },

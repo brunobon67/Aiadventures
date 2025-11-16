@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef } from 'https://aistudiocdn.com/react@^19.1.1';
-import ItineraryForm from './components/ItineraryForm.tsx';
-import ItineraryDisplay from './components/ItineraryDisplay.tsx';
-import LoadingSpinner from './components/LoadingSpinner.tsx';
-import EventsDisplay from './components/EventsDisplay.tsx';
-import FirebaseSetupBanner from './components/FirebaseSetupBanner.tsx';
-import { Itinerary, ItineraryRequest, User, FoundEvents } from './types.ts';
-import { generateItinerary, findLocalEvents, auth, db, isFirebaseConfigured, firebaseConfig } from './services/geminiService.ts';
-import { LoginIcon, LogoutIcon, PaperAirplaneIcon, BookmarkIcon, GithubIcon } from './components/icons.tsx';
-import AuthModal from './components/AuthModal.tsx';
-import SavedTripsModal from './components/SavedTripsModal.tsx';
-import { GITHUB_REPO_URL } from './constants.ts';
+import React, { useState, useEffect, useRef } from 'react';
+import ItineraryForm from './components/ItineraryForm';
+import ItineraryDisplay from './components/ItineraryDisplay';
+import LoadingSpinner from './components/LoadingSpinner';
+import EventsDisplay from './components/EventsDisplay';
+import FirebaseSetupBanner from './components/FirebaseSetupBanner';
+import { Itinerary, ItineraryRequest, User, FoundEvents } from './types';
+import { generateItinerary, findLocalEvents, auth, db, isFirebaseConfigured, firebaseConfig } from './services/geminiService';
+import { LoginIcon, LogoutIcon, PaperAirplaneIcon, BookmarkIcon, GithubIcon } from './components/icons';
+import AuthModal from './components/AuthModal';
+import SavedTripsModal from './components/SavedTripsModal';
+import { GITHUB_REPO_URL } from './constants';
 import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   type User as FirebaseUser
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+} from 'firebase/auth';
 import {
   collection,
   query,
@@ -26,7 +26,7 @@ import {
   orderBy,
   serverTimestamp,
   Timestamp,
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+} from 'firebase/firestore';
 
 type AuthMode = 'login' | 'register';
 type TripWithTimestamp = Itinerary & { createdAt?: Timestamp };
@@ -90,9 +90,17 @@ const App: React.FC = () => {
             });
 
             setSavedTrips(sortedTrips);
-        } catch (err) {
-            console.error("Failed to fetch user trips:", err);
-            // Handle specific Firestore errors if necessary, e.g., index creation link
+        } catch (err: any) {
+             console.error("Failed to fetch user trips:", err);
+            // Improved error handling for missing Firestore index
+            if (err.code === 'failed-precondition' && err.message.includes('index')) {
+                 const queryParts = err.message.match(/you can create it here: (https?:\/\/[^\s]+)/);
+                 const indexCreationLink = queryParts ? queryParts[1] : `https://console.firebase.google.com/project/${firebaseConfig.projectId}/firestore/indexes`;
+
+                setError(`firestore-index-required:${indexCreationLink}`);
+            } else {
+                setError("Failed to load your saved trips. Please try again later.");
+            }
         }
 
       } else {
@@ -369,7 +377,22 @@ service cloud.firestore {
               {isLoading && <LoadingSpinner />}
               {!isLoading && error && (
                  <div className="animate-fade-in" role="alert">
-                    {error === 'firestore-permission-denied' ? (
+                    {error.startsWith('firestore-index-required:') ? (
+                         <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 sm:p-6 rounded-md">
+                            <p className="font-bold text-lg text-yellow-900">Action Required: Create Firestore Index</p>
+                            <p className="mt-2">Your saved trips couldn't be loaded because a required database index is missing. This is needed to sort your trips by creation date efficiently.</p>
+                            <p className="mt-3 font-medium">Please click the button below to create the index in your Firebase project:</p>
+                             <a 
+                                href={error.split(':')[1]}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block mt-4 bg-secondary text-white font-bold py-2 px-4 rounded hover:bg-sky-600 transition-colors"
+                            >
+                                Create Database Index
+                            </a>
+                            <p className="mt-4 text-sm">After clicking, the index will start building (it may take a few minutes). Once it's "Enabled", refresh this page.</p>
+                        </div>
+                    ) : error === 'firestore-permission-denied' ? (
                         <div className="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 p-4 sm:p-6 rounded-md">
                             <p className="font-bold text-lg text-yellow-900">Action Required: Update Firestore Security Rules</p>
                             <p className="mt-2">Your trip could not be saved due to a "Permission Denied" error. This is usually caused by incorrect Firestore Security Rules in your Firebase project.</p>
@@ -405,7 +428,7 @@ service cloud.firestore {
                                 <p className="font-bold text-yellow-900">Troubleshooting</p>
                                 <p className="mt-2">If you still see the error after publishing the rules, please double-check:</p>
                                 <ul className="list-disc list-inside mt-2 space-y-1">
-                                    <li><strong>Correct Project ID:</strong> Make sure the `projectId` in `services/geminiService.ts` ("{firebaseConfig.projectId}") matches the one in your Firebase console URL.</li>
+                                    <li><strong>Correct Project ID:</strong> Make sure the `projectId` in `src/services/geminiService.ts` ("{firebaseConfig.projectId}") matches the one in your Firebase console URL.</li>
                                     <li><strong>Authentication Enabled:</strong> Ensure "Email/Password" is enabled in Firebase Authentication &gt; "Sign-in method" tab.</li>
                                     <li><strong>Wait a minute:</strong> Sometimes rules take a moment to become active. Give it 60 seconds and try saving again.</li>
                                 </ul>
@@ -428,6 +451,7 @@ service cloud.firestore {
                 <ItineraryDisplay 
                     itinerary={itinerary} 
                     onSave={handleSavePlan}
+                    onReset={handleReset}
                     isFirebaseConfigured={isFirebaseConfigured} 
                 />
               )}
